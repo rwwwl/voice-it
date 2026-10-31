@@ -1,0 +1,43 @@
+# macOS
+.DS_Store
+
+# Xcode / Swift build output
+build/
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+
+# Models (large, kept out of git)
+models/
+**/models/
+
+# Fixture audio (kept local; folder placeholder is tracked)
+fixtures/audio/*
+!fixtures/audio/.gitkeep
+
+
+# Coverage output
+*.profraw
+
+# Never commit: recordings, models, archives, installers or partial downloads (the release files are built, not stored)
+*.wav
+*.m4a
+*.aiff
+*.caf
+*.safetensors
+*.mlmodelc/
+*.mlpackage/
+*.gguf
+*.dmg
+*.zip
+*.pkg
+*.part
+*.profraw
+
+# Private working notes (the brief and the decision journal): never committed
+private/
+
+# Finished shareable builds kept by scripts/make-release.sh (never committed)
+releases/

@@ -1,0 +1,1 @@
+I opened Xcode and asked Parakeet to run through FluidAudio on the Neural Engine.

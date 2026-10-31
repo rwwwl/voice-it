@@ -1,0 +1,1 @@
+Um so I was looking at the build logs this morning and it looks like the failure is coming from the audio capture module, you know, the part that resamples to sixteen kilohertz. I think we should fix that before we move on to the overlay, and then run the whole fixture set again to check the timings.

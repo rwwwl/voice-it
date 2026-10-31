@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Filled in by scripts/build.sh from Config/app.env, VERSION and git. Do not put a literal name here. -->
+    <key>CFBundleIdentifier</key><string>@BUNDLE_ID@</string>
+    <key>CFBundleName</key><string>@APP_NAME@</string>
+    <key>CFBundleDisplayName</key><string>@APP_NAME@</string>
+    <key>CFBundleExecutable</key><string>@EXECUTABLE_NAME@</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>CFBundleShortVersionString</key><string>@VERSION@</string>
+    <key>CFBundleVersion</key><string>@BUILD@</string>
+    <key>NSHumanReadableCopyright</key><string>Copyright © @COPYRIGHT_YEAR@ @COPYRIGHT_HOLDER@. Free software under the GNU General Public License, version 3.</string>
+    <key>VoiceItCopyrightHolder</key><string>@COPYRIGHT_HOLDER@</string>
+    <key>VoiceItCopyrightYear</key><string>@COPYRIGHT_YEAR@</string>
+    <key>VoiceItCommit</key><string>@COMMIT@</string>
+    <key>VoiceItRepoURL</key><string>@REPO_URL@</string>
+    <key>LSMinimumSystemVersion</key><string>15.0</string>
+    <key>LSUIElement</key><true/>
+    <key>NSPrincipalClass</key><string>NSApplication</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>@APP_NAME@ records your voice while you hold the hotkey so it can turn it into text. Audio stays on this Mac.</string>
+</dict>
+</plist>

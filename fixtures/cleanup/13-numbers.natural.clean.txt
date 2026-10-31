@@ -1,0 +1,1 @@
+The invoice total is $1,250, due on the 15th of November.

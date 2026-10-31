@@ -1,0 +1,199 @@
+{
+  "models": [
+    {
+      "id": "speech",
+      "name": "Parakeet TDT 0.6B v2 (speech recognition, Core ML)",
+      "repo": "FluidInference/parakeet-tdt-0.6b-v2-coreml",
+      "revision": "ee09c569f73759e6d44c9bd16766f477b2b36d39",
+      "licence": "CC-BY-4.0",
+      "destination": "parakeet-tdt-0.6b-v2",
+      "files": [
+        {
+          "path": "Decoder.mlmodelc/analytics/coremldata.bin",
+          "sha256": "46de1a6fe2e49d19a2125bc91acf020df7f2aea84ba821532aade8427a440b05",
+          "size": 243
+        },
+        {
+          "path": "Decoder.mlmodelc/coremldata.bin",
+          "sha256": "d200ca07694a347f6d02a3886a062ae839831e094e443222f2e48a14945966a8",
+          "size": 554
+        },
+        {
+          "path": "Decoder.mlmodelc/metadata.json",
+          "sha256": "90a279b822496316458febc0ce761ab05954fadd9d66aa97bea077a35fc8f2b2",
+          "size": 3427
+        },
+        {
+          "path": "Decoder.mlmodelc/model.mil",
+          "sha256": "7b95a5a6b672c652000348a67b6d4d92bb8e176b978c6666fe73c28a4d7ec579",
+          "size": 13106
+        },
+        {
+          "path": "Decoder.mlmodelc/weights/weight.bin",
+          "sha256": "27d26890221d82322c1092fd99d7b40578e435d5cf4b83c887c42603caf97aba",
+          "size": 14429952
+        },
+        {
+          "path": "Encoder.mlmodelc/analytics/coremldata.bin",
+          "sha256": "42e638870d73f26b332918a3496ce36793fbb413a81cbd3d16ba01328637a105",
+          "size": 243
+        },
+        {
+          "path": "Encoder.mlmodelc/coremldata.bin",
+          "sha256": "4def7aa848599ad0e17a8b9a982edcdbf33cf92e1f4b798de32e2ca0bc74b030",
+          "size": 485
+        },
+        {
+          "path": "Encoder.mlmodelc/metadata.json",
+          "sha256": "58222fbc48c13c49d9715567803cd50cb9c23e4360462e0f8ffcea59a2c73c63",
+          "size": 2926
+        },
+        {
+          "path": "Encoder.mlmodelc/model.mil",
+          "sha256": "ed7b19156ca29fa7dfd6891deb9fda4b0e8893f68597c985d135736546a43808",
+          "size": 959769
+        },
+        {
+          "path": "Encoder.mlmodelc/weights/weight.bin",
+          "sha256": "4adc7ad44f9d05e1bffeb2b06d3bb02861a5c7602dff63a6b494aed3bf8a6c3e",
+          "size": 445187200
+        },
+        {
+          "path": "JointDecision.mlmodelc/analytics/coremldata.bin",
+          "sha256": "f1183ba213bb94a918c8d2cad19ab045320618f97f6ca662245b3936d7b090f7",
+          "size": 243
+        },
+        {
+          "path": "JointDecision.mlmodelc/coremldata.bin",
+          "sha256": "e2c6752f1c8cf2d3f6f26ec93195c9bfa759ad59edf9f806696a138154f96f11",
+          "size": 534
+        },
+        {
+          "path": "JointDecision.mlmodelc/metadata.json",
+          "sha256": "ba8d309417b9acd4a175fdb15687de6a941db2f5b06666a60e7cf3cc8e2d3c3c",
+          "size": 2936
+        },
+        {
+          "path": "JointDecision.mlmodelc/model.mil",
+          "sha256": "93bf82042235127cb81ab537dcae47a1c2e7e242ce4ffdaf772981b45eedc4f0",
+          "size": 9722
+        },
+        {
+          "path": "JointDecision.mlmodelc/weights/weight.bin",
+          "sha256": "ca22a65903a05e64137677da608077578a8606090a598abf4875fa6199aaa19d",
+          "size": 3453388
+        },
+        {
+          "path": "Preprocessor.mlmodelc/analytics/coremldata.bin",
+          "sha256": "03ab3c1327a054c54c07a40325db967ec574f2c91dcc8192bfa44aa561bcf2d8",
+          "size": 243
+        },
+        {
+          "path": "Preprocessor.mlmodelc/coremldata.bin",
+          "sha256": "d88ea1fc349459c9e100d6a96688c5b29a1f0d865f544be103001724b986b6d6",
+          "size": 494
+        },
+        {
+          "path": "Preprocessor.mlmodelc/metadata.json",
+          "sha256": "fb16c581ff5e1b962e7cb2181ed892cd32f9f84c12b6e80ff3e089f28e35bcbb",
+          "size": 2974
+        },
+        {
+          "path": "Preprocessor.mlmodelc/model.mil",
+          "sha256": "3e06d16fd061294c8a75be68c43a3b1ed1f593d4a9c35249e9cdbccadc59721e",
+          "size": 27166
+        },
+        {
+          "path": "Preprocessor.mlmodelc/weights/weight.bin",
+          "sha256": "a5f7df6c7f47147ae9486fe18cc7792f9a44d093ec3c6a11e91ef2dc363c48dc",
+          "size": 298880
+        },
+        {
+          "path": "config.json",
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "size": 3
+        },
+        {
+          "path": "parakeet_vocab.json",
+          "sha256": "57019fe3c745772ca83a1b048a4bb951cd51329504ea33d4d83316b96e279a97",
+          "size": 18762
+        }
+      ]
+    },
+    {
+      "id": "cleanup",
+      "name": "Qwen3-4B-Instruct-2507, 4-bit (text cleanup, MLX)",
+      "repo": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+      "revision": "50d427756c6b1b2fe0c0a10f67fbda1fc8e82c1b",
+      "licence": "Apache-2.0",
+      "destination": "cleanup/Qwen3-4B-Instruct-2507-4bit",
+      "files": [
+        {
+          "path": ".gitattributes",
+          "sha256": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+          "size": 1570
+        },
+        {
+          "path": "README.md",
+          "sha256": "7b17ce562d7ea121c86d2ffdf660eed3726ac5b52cacfa9f1de11a65969f5657",
+          "size": 969
+        },
+        {
+          "path": "added_tokens.json",
+          "sha256": "c0284b582e14987fbd3d5a2cb2bd139084371ed9acbae488829a1c900833c680",
+          "size": 707
+        },
+        {
+          "path": "chat_template.jinja",
+          "sha256": "40c21f34cf67d8c760ef72f8ad3ae5afad514299d4b06e91dd9a8d705af7b541",
+          "size": 4040
+        },
+        {
+          "path": "config.json",
+          "sha256": "574349e5a343236546fda55e4744a76e181f534182d7dc60ff1bad7e7a502849",
+          "size": 938
+        },
+        {
+          "path": "generation_config.json",
+          "sha256": "835fffe355c9438e7a25be099b3fccaa98350b83451f9fd2d99512e74f1ade48",
+          "size": 238
+        },
+        {
+          "path": "merges.txt",
+          "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+          "size": 1671853
+        },
+        {
+          "path": "model.safetensors",
+          "sha256": "2a73c6c248601ab904e035548abd8e6abb65ea27dcb5f342fb0a8910eb44173f",
+          "size": 2263022417
+        },
+        {
+          "path": "model.safetensors.index.json",
+          "sha256": "388d811b8b7c2608dd04cce1bcb04a8bf715d19b42790894e6d3427ff429a777",
+          "size": 63964
+        },
+        {
+          "path": "special_tokens_map.json",
+          "sha256": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd",
+          "size": 613
+        },
+        {
+          "path": "tokenizer.json",
+          "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "size": 11422654
+        },
+        {
+          "path": "tokenizer_config.json",
+          "sha256": "4397cc477eb6d79715ccd2000accd6b3531928f30029665832fa1b255f24d2b9",
+          "size": 5440
+        },
+        {
+          "path": "vocab.json",
+          "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+          "size": 2776833
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dictation overlay: visual reference prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<!--
+  VISUAL REFERENCE ONLY. Do not port this code.
+  The real app is Swift / SwiftUI with native Liquid Glass. This file exists so you can see the exact
+  look and motion of the dictation overlay pill. If it disagrees with the written overlay spec, the spec wins.
+
+  Open it in a browser. Use the buttons to switch states. "Play sequence" runs the normal flow.
+  The "Mic level" slider scales the spectrum so you can see the flat-bars case.
+
+  Motion constants used here (re-create in SwiftUI, do not copy the CSS/canvas techniques):
+  - Spectrum: 16 bars, 4 wide, 3 gap, 3 min height, ~26 max height. Rise 35% of the way to target per frame,
+    fall 12% per frame (at 60 fps). In the real app the targets come from the live mic spectrum.
+  - "Cleaning up" scramble loop, 3.2 s: 0-0.5 s fully scrambled (random lowercase letters, refreshed every 60 ms),
+    0.5-1.1 s letters lock in left to right, 1.1-2.5 s hold, 2.5-3.2 s letters scramble out left to right.
+    Spaces never scramble. A light sweep moves across the text the whole time.
+  - Pill width animates between states over ~0.5 s with a slight overshoot (underdamped spring).
+  - No-speech shake: 0.45 s, about 6 pt each way. Cancel (X): fade out over 0.25 s, then reset.
+  - Pill is 48 pt high. Padding is even on both sides in every state. Text-only pills (processing, loading,
+    no speech) use about 18 pt each side; the scramble avoids the widest letters (m, w) so the pill never needs to
+    be wider than "Cleaning up" plus a few points.
+-->
+<style>
+html,body{margin:0;background:#0b0b12;color:#e5e5ea;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:24px 16px 40px}
+h1{font-size:18px;font-weight:500;margin:0 0 4px}
+.note{font-size:13px;color:#8e8e93;margin:0 0 16px}
+button{background:#1c1c1e;color:#fff;border:1px solid #3a3a3c;border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+button:hover{background:#2c2c2e}
+input[type=range]{accent-color:#ff8a5c}
+@keyframes sweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes shake{0%,100%{transform:translateX(-50%)}20%{transform:translateX(calc(-50% - 6px))}40%{transform:translateX(calc(-50% + 6px))}60%{transform:translateX(calc(-50% - 3px))}80%{transform:translateX(calc(-50% + 3px))}}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-20px)}}
+@keyframes bar{0%{left:-40%}100%{left:100%}}
+.seg{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px;align-items:center}
+.seg button.on{background:#2c2c2e;border-color:#8e8e93}
+.lab{font-size:12px;color:#8e8e93;min-width:72px}
+#pill{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);height:48px;width:260px;border-radius:24px;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 11px 0 20px;overflow:hidden;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;font-size:13px;font-weight:500;letter-spacing:.005em;background:rgba(16,18,30,.5);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(255,255,255,.06),inset 0 0 0 1px rgba(255,255,255,.12),0 14px 34px rgba(0,0,0,.55),0 0 calc(6px + 24px*var(--g,0)) rgba(255,160,110,calc(.06 + .26*var(--g,0)));transition:width .5s cubic-bezier(.34,1.45,.64,1),opacity .25s ease}
+#pill::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,0) 36%,rgba(255,255,255,0) 72%,rgba(255,255,255,.07) 100%);pointer-events:none}
+#pill.shake{animation:shake .45s ease}
+#msg{color:#fff;font-size:14px;white-space:nowrap}
+#msg.fixed{display:inline-block;min-width:92px;text-align:center}
+.proc-s #msg{background:linear-gradient(90deg,rgba(255,255,255,.45) 0%,#fff 50%,rgba(255,255,255,.45) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (prefers-reduced-motion:no-preference){.proc-s #msg{animation:sweep 1.8s linear infinite}}
+#chip{border-radius:13px;padding:4px 11px;font-size:12.5px;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);color:#fff;white-space:nowrap}
+#chk{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:#34d399;color:#052e1f;font-size:14px}
+#chk.warn{background:#fbbf24;color:#3a2600}
+#chk.err{background:#f87171;color:#3a0b0b}
+#x{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.18);color:#fff;cursor:pointer;outline:none;transition:background .15s,transform .15s}
+#x:hover{background:rgba(255,255,255,.22)}
+#x:active{transform:scale(.9)}
+#x:focus-visible{box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),0 0 0 2px rgba(255,190,150,.9)}
+#x svg{display:block}
+#bar{position:absolute;left:0;right:0;bottom:0;height:2px;overflow:hidden;display:none}
+#bar::after{content:"";position:absolute;top:0;bottom:0;left:30%;width:40%;background:linear-gradient(90deg,transparent,#ffb27a,transparent)}
+@media (prefers-reduced-motion:no-preference){#bar::after{left:-40%;animation:bar 1.4s ease-in-out infinite}}
+.blob{position:absolute;border-radius:50%;filter:blur(46px)}
+@media (prefers-reduced-motion:no-preference){.blob{animation:drift 9s ease-in-out infinite}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Dictation overlay: visual reference prototype</h1>
+<p class="note">Reference only. Re-create in SwiftUI with native glass; the written spec wins if they disagree.</p>
+<div class="seg" id="seg">
+<span class="lab">Main flow</span>
+<button data-s="listening" class="on">Listening</button>
+<button data-s="processing">Processing</button>
+<button data-s="done">Done</button>
+<button data-s="nospeech">No speech</button>
+<button id="play">Play sequence</button>
+</div>
+<div class="seg" id="seg2">
+<span class="lab">Edge cases</span>
+<button data-s="loading">Loading model</button>
+<button data-s="mic">Mic blocked</button>
+<button data-s="fallback">Cleanup skipped</button>
+</div>
+<div style="background:linear-gradient(160deg,#06060e 0%,#0e1030 55%,#1a0e2c 100%);border-radius:12px;height:340px;position:relative;overflow:hidden;margin-top:6px">
+<div class="blob" style="width:200px;height:200px;background:#0ea5c6;left:-40px;top:150px;opacity:.4"></div>
+<div class="blob" style="width:220px;height:220px;background:#c026d3;right:-30px;top:20px;opacity:.32;animation-delay:-4s"></div>
+<div class="blob" style="width:170px;height:170px;background:#d97706;left:44%;top:210px;opacity:.26;animation-delay:-2s"></div>
+<div style="position:absolute;left:28px;right:28px;top:24px;height:262px;background:#1c1c1e;border-radius:10px;padding:14px 18px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.07)">
+<div style="display:flex;gap:6px;margin-bottom:16px"><span style="width:10px;height:10px;border-radius:50%;background:#ff5f57"></span><span style="width:10px;height:10px;border-radius:50%;background:#febc2e"></span><span style="width:10px;height:10px;border-radius:50%;background:#28c840"></span></div>
+<div style="height:9px;width:58%;background:#3a3a3c;border-radius:5px;margin-bottom:11px"></div>
+<div style="height:9px;width:82%;background:#3a3a3c;border-radius:5px;margin-bottom:11px"></div>
+<div style="height:9px;width:46%;background:#3a3a3c;border-radius:5px;margin-bottom:11px"></div>
+<div style="height:9px;width:70%;background:#3a3a3c;border-radius:5px;margin-bottom:11px"></div>
+<div style="height:9px;width:14%;background:#8e8e93;border-radius:5px"></div>
+</div>
+<div id="pill">
+<span id="chk"><i id="chki" class="ti ti-check" aria-hidden="true"></i></span>
+<canvas id="cv" width="109" height="28" style="width:109px;height:28px;display:block"></canvas>
+<span id="msg"></span>
+<span id="chip">Casual</span>
+<div id="x" role="button" tabindex="0" aria-label="Cancel dictation"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5"/></svg></div>
+<div id="bar"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:14px 0 0">
+<label for="lvl" style="font-size:14px;color:#8e8e93">Mic level</label>
+<input type="range" id="lvl" min="0" max="100" step="1" value="70" style="flex:1">
+<span id="lvlo" style="font-size:14px;font-weight:500;min-width:36px;text-align:right">70%</span>
+</div>
+</div>
+<script>
+var pill=document.getElementById('pill'),msg=document.getElementById('msg'),cv=document.getElementById('cv'),ctx=cv.getContext('2d'),lvl=document.getElementById('lvl'),chip=document.getElementById('chip'),chk=document.getElementById('chk'),chki=document.getElementById('chki'),state='listening',timers=[],pstart=0;
+var dpr=window.devicePixelRatio||1;cv.width=109*dpr;cv.height=28*dpr;ctx.scale(dpr,dpr);
+var grad=ctx.createLinearGradient(0,0,109,0);grad.addColorStop(0,'#ffd37a');grad.addColorStop(.5,'#ff8a5c');grad.addColorStop(1,'#ff5f9e');
+var N=16,arr=[],smooth=0;
+var pads={listening:'0 11px 0 20px',processing:'0 18px',done:'0 18px 0 14px',nospeech:'0 18px',loading:'0 18px',mic:'0 10px 0 14px',fallback:'0 18px 0 14px'};
+for(var k=0;k<N;k++)arr.push(3);
+lvl.addEventListener('input',function(){document.getElementById('lvlo').textContent=Math.round(lvl.value)+'%'});
+function show(id,on,d){document.getElementById(id).style.display=on?(d||''):'none'}
+var WORD='Cleaning up',ABC='abcdefghijklnopqrstuvxyz',scr=WORD,lastTick=-1;
+function rnd(n){var s='';for(var i=0;i<n;i++){s+=WORD[i]===' '?' ':ABC[Math.floor(Math.random()*ABC.length)]}return s}
+function scrambleText(el){
+var t=(performance.now()-pstart)%3200,len=WORD.length,tick=Math.floor(t/60);
+if(tick!==lastTick){scr=rnd(len);lastTick=tick}
+var n,out='';
+if(t<500){out=scr}
+else if(t<1100){n=Math.floor((t-500)/600*len);out=WORD.slice(0,n)+scr.slice(n)}
+else if(t<2500){out=WORD}
+else{n=Math.floor((t-2500)/700*len);out=scr.slice(0,n)+WORD.slice(n)}
+if(el.textContent!==out)el.textContent=out;
+}
+function fit(prevW){
+pill.style.transition='none';pill.style.width='max-content';
+var w=pill.getBoundingClientRect().width;
+pill.style.width=(prevW||w)+'px';void pill.offsetWidth;
+pill.style.transition='';pill.style.width=w.toFixed(1)+'px';
+}
+function setState(s){
+var prevW=pill.getBoundingClientRect().width;
+state=s;
+pill.style.opacity=1;
+var lis=s==='listening',prc=s==='processing',dn=s==='done',ns=s==='nospeech',ld=s==='loading',mic=s==='mic',fb=s==='fallback';
+pill.className=(prc||ld)?'proc-s':'';
+pill.style.padding=pads[s];
+show('cv',lis,'block');show('chk',dn||mic||fb,'flex');show('msg',!lis);show('chip',lis||mic);show('x',lis,'flex');show('bar',ld,'block');
+chk.className=mic?'err':fb?'warn':'';
+chki.className=mic?'ti ti-microphone-off':fb?'ti ti-alert-circle':'ti ti-check';
+chip.textContent=mic?'Open settings':'Casual';
+msg.className=prc?'fixed':'';
+if(prc){msg.textContent=WORD;pstart=performance.now();lastTick=-1}
+if(dn)msg.textContent='Pasted';
+if(ns)msg.textContent='No speech detected';
+if(ld)msg.textContent='Loading model';
+if(mic)msg.textContent='Mic access is off';
+if(fb)msg.textContent='Pasted without cleanup';
+fit(prevW);
+if(ns){pill.classList.remove('shake');void pill.offsetWidth;pill.classList.add('shake')}
+if(!lis){ctx.clearRect(0,0,109,28);pill.style.setProperty('--g',0)}
+document.querySelectorAll('.seg button[data-s]').forEach(function(x){x.classList.toggle('on',x.dataset.s===s)})
+}
+function clearT(){timers.forEach(clearTimeout);timers=[]}
+document.querySelectorAll('.seg button[data-s]').forEach(function(x){x.addEventListener('click',function(){clearT();setState(x.dataset.s)})});
+function cancel(){clearT();pill.style.opacity=0;timers.push(setTimeout(function(){setState('listening')},1000))}
+var xb=document.getElementById('x');
+xb.addEventListener('click',cancel);
+xb.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();cancel()}});
+document.getElementById('play').addEventListener('click',function(){
+clearT();setState('listening');
+timers.push(setTimeout(function(){setState('processing')},3000));
+timers.push(setTimeout(function(){setState('done')},6400));
+timers.push(setTimeout(function(){setState('listening')},8200));
+});
+var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function gauss(i,c,w){var d=(i-c)/w;return Math.exp(-d*d)}
+function frame(t){
+if(state==='listening'){
+var tt=still?1000:t,L=lvl.value/100,sum=0;
+ctx.clearRect(0,0,109,28);ctx.fillStyle=grad;ctx.shadowColor='rgba(255,150,100,.7)';ctx.shadowBlur=8;
+var s=Math.max(0,Math.sin(tt*0.0045)*0.8+0.4+Math.sin(tt*0.011)*0.2);
+for(var i=0;i<N;i++){
+var spec=0.1+0.45*Math.exp(-i/4.5)+0.55*gauss(i,2.5+1*Math.sin(tt*0.0021),1.2)+0.45*gauss(i,6+1.5*Math.sin(tt*0.0017+1),1.5)+0.3*gauss(i,10.5+1*Math.sin(tt*0.0013+2),1.8);
+var jit=0.85+0.15*Math.sin(tt*0.02+i*1.3);
+var tg=3+Math.min(1,s*spec*jit)*23*L;
+arr[i]+=(tg-arr[i])*(tg>arr[i]?0.35:0.12);
+sum+=arr[i];
+var h=arr[i],x=i*7,y=14-h/2;
+ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,4,h,2):ctx.rect(x,y,4,h);ctx.fill();
+}
+var avg=(sum/N-3)/17;smooth+=(avg-smooth)*0.15;
+pill.style.setProperty('--g',Math.max(0,Math.min(1,smooth*1.8)).toFixed(2));
+}else if(state==='processing'){
+if(still){msg.textContent=WORD}else{scrambleText(msg)}
+}
+requestAnimationFrame(frame)}
+setState('listening');requestAnimationFrame(frame);
+</script>
+</body>
+</html>

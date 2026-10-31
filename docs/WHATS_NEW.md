@@ -1,0 +1,5 @@
+- Hold-to-talk dictation with Right Option, and a small overlay that shows what's happening
+- Hands-free mode (add Shift) and copy-only mode (add Right Command)
+- Four writing styles: Exact, Natural, Polished, and Automatic by app (beta)
+- A first-run setup window that downloads the models (about 2.7 GB), checks them, and walks you through permissions
+- A menu bar app with a vocabulary editor and a few settings

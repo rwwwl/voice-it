@@ -1,0 +1,1 @@
+okay so basically what happened was um the build failed and i think it was the audio thing but actually no it was the config file that was wrong so i fixed that and now it's it's working again
